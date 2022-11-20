@@ -23,8 +23,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASS }}
       -
-        name: push image - server
+        name: Build and push
         uses: docker/build-push-action@v2
         with:
-          push: true
-          tags: tmp/kyb
+          context: .
+          push: ${{ endswith(github.ref, 'master') }}
+          tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
